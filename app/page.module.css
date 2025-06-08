@@ -105,32 +105,29 @@
 /* ——————————————————————— */
 
 /* 1) Keep the avatar container positioned */
-:global(.anonymous .pc-avatar-content) {
-  position: relative;
-  overflow: hidden;
-}
+:global {
+  .anonymous .pc-avatar-content {
+    position: relative;
+    overflow: hidden;
+  }
 
-/* 2) Render the Gravatar “mp” image as a dark silhouette */
-:global(.anonymous .pc-avatar-content .avatar[src*="gravatar.com"]) {
-  filter: brightness(0) blur(2px) opacity(0.8);
-  /* remove any forced background */
-  background: none;
-  display: block;
-}
+  .anonymous .pc-avatar-content .avatar[src*="gravatar.com"] {
+    filter: brightness(0) blur(2px) opacity(0.8);
+    background: none;
+    display: block;
+  }
 
-/* 3) Remove the extra dark overlay -- let the gradient show through */
-:global(.anonymous .pc-avatar-content)::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  /* lighten or remove the overlay: */
-  background: rgba(0,0,0,0.1);
-  pointer-events: none;
-}
+  .anonymous .pc-avatar-content::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.1);
+    pointer-events: none;
+  }
 
-/* 4) Keep the neon frame on the card */
-:global(.anonymous .pc-card-wrapper) {
-  box-shadow:
-    0 0 20px rgba(0, 240, 255, 0.3),
-    0 0 40px rgba(0, 240, 255, 0.2);
+  .anonymous .pc-card-wrapper {
+    box-shadow:
+      0 0 20px rgba(0, 240, 255, 0.3),
+      0 0 40px rgba(0, 240, 255, 0.2);
+  }
 }
