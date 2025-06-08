@@ -1,7 +1,7 @@
-// components/GooeyNav.tsx
+// app/components/GooeyNav.tsx
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import './GooeyNav.css'
 
 interface NavItem {
@@ -57,21 +57,33 @@ export default function GooeyNav({
 
   const makeParticles = (element: Element) => {
     if (!filterRef.current) return
-    filterRef.current.style.setProperty('--time', `${animationTime * 2 + timeVariance}ms`)
+    filterRef.current.style.setProperty(
+      '--time',
+      `${animationTime * 2 + timeVariance}ms`
+    )
     for (let i = 0; i < particleCount; i++) {
       setTimeout(() => {
-        const p = createParticle(i, animationTime * 2 + noise(timeVariance * 2), particleDistances, particleR)
+        const p = createParticle(
+          i,
+          animationTime * 2 + noise(timeVariance * 2),
+          particleDistances,
+          particleR
+        )
         const particle = document.createElement('span')
         const point = document.createElement('span')
         particle.classList.add('particle')
-        particle.style.setProperty('--start-x', `${p.start[0]}px`)
-        particle.style.setProperty('--start-y', `${p.start[1]}px`)
-        particle.style.setProperty('--end-x', `${p.end[0]}px`)
-        particle.style.setProperty('--end-y', `${p.end[1]}px`)
-        particle.style.setProperty('--time', `${p.time}ms`)
-        particle.style.setProperty('--scale', `${p.scale}`)
-        particle.style.setProperty('--color', `var(--color-${p.color}, white)`)
-        particle.style.setProperty('--rotate', `${p.rotate}deg`)
+        Object.entries({
+          '--start-x': `${p.start[0]}px`,
+          '--start-y': `${p.start[1]}px`,
+          '--end-x': `${p.end[0]}px`,
+          '--end-y': `${p.end[1]}px`,
+          '--time': `${p.time}ms`,
+          '--scale': `${p.scale}`,
+          '--color': `var(--color-${p.color}, white)`,
+          '--rotate': `${p.rotate}deg`,
+        }).forEach(([prop, val]) =>
+          particle.style.setProperty(prop, val)
+        )
         point.classList.add('point')
         particle.appendChild(point)
         element.appendChild(particle)
@@ -87,34 +99,47 @@ export default function GooeyNav({
     if (!containerRef.current || !filterRef.current || !textRef.current) return
     const cRect = containerRef.current.getBoundingClientRect()
     const pos = el.getBoundingClientRect()
-    const styles = {
+    Object.assign(filterRef.current.style, {
       left: `${pos.x - cRect.x}px`,
       top: `${pos.y - cRect.y}px`,
       width: `${pos.width}px`,
       height: `${pos.height}px`,
-    }
-    Object.assign(filterRef.current.style, styles)
-    Object.assign(textRef.current.style, styles)
+    })
+    Object.assign(textRef.current.style, filterRef.current.style)
     textRef.current.innerText = el.textContent || ''
   }
 
-  const handleClick = (e: any, idx: number) => {
+  const handleClick = (
+    e: React.MouseEvent<HTMLLIElement>,
+    idx: number
+  ) => {
     if (activeIndex === idx) return
     setActiveIndex(idx)
-    const li = e.currentTarget as Element
+    const li = e.currentTarget
     updateEffectPosition(li)
-    textRef.current?.classList.remove('active')
-    void textRef.current?.offsetWidth
-    textRef.current?.classList.add('active')
-    filterRef.current?.classList.remove('active')
-    makeParticles(filterRef.current!)
+
+    if (textRef.current) {
+      textRef.current.classList.remove('active')
+      // force reflow
+      // eslint-disable-next-line no-unused-expressions
+      void textRef.current.offsetWidth
+      textRef.current.classList.add('active')
+    }
+
+    if (filterRef.current) {
+      filterRef.current.classList.remove('active')
+      makeParticles(filterRef.current)
+    }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent, idx: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLAnchorElement>,
+    idx: number
+  ) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
       const li = (e.currentTarget as HTMLElement).parentElement!
-      handleClick({ currentTarget: li }, idx)
+      handleClick(new MouseEvent('click') as any, idx)
     }
   }
 
@@ -130,7 +155,7 @@ export default function GooeyNav({
       const cur = navRef.current?.querySelectorAll('li')[activeIndex]
       cur && updateEffectPosition(cur)
     })
-    ro.observe(containerRef.current!)
+    ro.observe(containerRef.current!) 
     return () => ro.disconnect()
   }, [activeIndex])
 
