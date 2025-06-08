@@ -2,6 +2,7 @@
   "name": "aic-website",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://Abdallah-RA.github.io/aic-website",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -28,6 +29,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "gh-pages": "^6.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
