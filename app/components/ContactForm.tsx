@@ -57,7 +57,70 @@ export default function ContactForm() {
     <StarBorder as="div" className={styles.wrapper} color="#0af" speed="8s">
       <h2 className={styles.title}>Join AIC</h2>
       <form className={styles.form} onSubmit={handleSubmit}>
-        {/* ...form fields unchanged... */}
+        <div className={styles.field}>
+          <label htmlFor="name">Name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Your full name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="universityId">University ID</label>
+          <input
+            id="universityId"
+            name="universityId"
+            type="text"
+            placeholder="e.g. 12345678"
+            value={formData.universityId}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <fieldset className={styles.fieldset}>
+          <legend>Which team?</legend>
+          <div className={styles.radioGroup}>
+            {(
+              [
+                ['hardware', 'Hardware'],
+                ['ai', 'AI'],
+                ['software', 'Software'],
+                ['electrical', 'Electrical'],
+              ] as const
+            ).map(([value, label]) => (
+              <label key={value} className={styles.radioLabel}>
+                <input
+                  type="radio"
+                  name="team"
+                  value={value}
+                  checked={formData.team === value}
+                  onChange={handleChange}
+                />
+                {label}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
         <button type="submit" className={styles.submit} disabled={submitting}>
           {submitting ? 'Submitting…' : 'Submit'}
         </button>
