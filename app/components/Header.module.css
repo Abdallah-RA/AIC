@@ -1,0 +1,44 @@
+/* components/Header.module.css */
+
+.header {
+  /* your existing flex / padding / colors… */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: rgba(0, 0, 0, 0.8); /* semi-opaque so content scrolls “under” it */
+
+  /* NEW: stick this header to the top */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between logo and rotating text */
+}
+
+.navContainer {
+  justify-self: center; /* center the nav in the second (1fr) column */
+}
+
+.logo {
+  font-size: 1.8rem;
+}
+
+.tagline {
+  font-style: italic;
+  color: #ddd;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rotatingWord {
+  background: #2deaff;
+  color: #000;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}

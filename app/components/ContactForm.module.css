@@ -1,0 +1,114 @@
+/* app/components/ContactForm.module.css */
+
+/* The outer wrapper used by StarBorder */
+.wrapper {
+  padding: 2rem;
+  max-width: 480px;
+  margin: 2rem auto;
+}
+
+/* Title at top of form */
+.title {
+  text-align: center;
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* The <form> itself */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Each label + input group */
+.field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.field label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Text inputs */
+.field input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.field input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.field input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Radio group container */
+.fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fieldset legend {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* The row of team radio buttons */
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.radioLabel input {
+  accent-color: #06c;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* Submit button */
+.submit {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.6rem;
+  background: linear-gradient(135deg, #06c, #0af);
+  color: white;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+.submit:hover {
+  background: linear-gradient(135deg, #0af, #06c);
+  transform: translateY(-2px);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

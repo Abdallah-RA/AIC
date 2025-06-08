@@ -1,0 +1,136 @@
+/* app/page.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #000; /* or your theme background */
+  color: #fff;
+}
+
+.main {
+  flex: 1;
+  position: relative;
+  padding: 2rem 1rem;
+  z-index: 1; /* keep content above particle/threads canvases */
+}
+
+.aboutTeams {
+  text-align: center;
+  margin: 4rem 0;
+}
+
+.footer {
+  background: #111;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #bbb;
+}
+
+/* ensure canvases fill behind content */
+.particles-container,
+.threads-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* Overall page container */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+/* Main content area */
+.main {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* Domains row: center all feature items */
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 3rem;
+  margin: 3rem 0;
+}
+
+/* Stack PixelCard + ProfileCard vertically */
+.featureItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+
+/* Match ProfileCard width to PixelCard */
+.profileCard {
+  width: 300px;
+}
+
+/* “Future Interviews” section */
+.aboutTeams {
+  margin-top: 4rem;
+  text-align: center;
+  opacity: 0.6;
+}
+.aboutTeams h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.aboutTeams p {
+  font-size: 1rem;
+}
+
+/* Footer at bottom */
+.footer {
+  padding: 1rem;
+  text-align: center;
+  background: #111;
+  opacity: 0.8;
+}
+
+
+/* ——————————————————————— */
+/*   ANONYMIZATION / DARK SILHOUETTE  */
+/* ——————————————————————— */
+
+/* 1) Keep the avatar container positioned */
+:global(.anonymous .pc-avatar-content) {
+  position: relative;
+  overflow: hidden;
+}
+
+/* 2) Render the Gravatar “mp” image as a dark silhouette */
+:global(.anonymous .pc-avatar-content .avatar[src*="gravatar.com"]) {
+  filter: brightness(0) blur(2px) opacity(0.8);
+  /* remove any forced background */
+  background: none;
+  display: block;
+}
+
+/* 3) Remove the extra dark overlay -- let the gradient show through */
+:global(.anonymous .pc-avatar-content)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* lighten or remove the overlay: */
+  background: rgba(0,0,0,0.1);
+  pointer-events: none;
+}
+
+/* 4) Keep the neon frame on the card */
+:global(.anonymous .pc-card-wrapper) {
+  box-shadow:
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 40px rgba(0, 240, 255, 0.2);
+}
