@@ -71,7 +71,6 @@
   gap: 1.5rem;
 }
 
-
 /* Match ProfileCard width to PixelCard */
 .profileCard {
   width: 300px;
@@ -99,35 +98,32 @@
   opacity: 0.8;
 }
 
-
 /* ——————————————————————— */
 /*   ANONYMIZATION / DARK SILHOUETTE  */
 /* ——————————————————————— */
 
 /* 1) Keep the avatar container positioned */
-:global {
-  .anonymous .pc-avatar-content {
-    position: relative;
-    overflow: hidden;
-  }
+:global(.anonymous) .pc-avatar-content {
+  position: relative;
+  overflow: hidden;
+}
 
-  .anonymous .pc-avatar-content .avatar[src*="gravatar.com"] {
-    filter: brightness(0) blur(2px) opacity(0.8);
-    background: none;
-    display: block;
-  }
+:global(.anonymous) .pc-avatar-content .avatar[src*="gravatar.com"] {
+  filter: brightness(0) blur(2px) opacity(0.8);
+  background: none;
+  display: block;
+}
 
-  .anonymous .pc-avatar-content::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.1);
-    pointer-events: none;
-  }
+:global(.anonymous) .pc-avatar-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.1);
+  pointer-events: none;
+}
 
-  .anonymous .pc-card-wrapper {
-    box-shadow:
-      0 0 20px rgba(0, 240, 255, 0.3),
-      0 0 40px rgba(0, 240, 255, 0.2);
-  }
+:global(.anonymous) .pc-card-wrapper {
+  box-shadow:
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 40px rgba(0, 240, 255, 0.2);
 }
