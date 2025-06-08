@@ -1,4 +1,3 @@
-// app/components/GooeyNav.tsx
 'use client'
 
 import React, { useRef, useEffect, useState } from 'react'
@@ -121,8 +120,7 @@ export default function GooeyNav({
     if (textRef.current) {
       textRef.current.classList.remove('active')
       // force reflow
-      // eslint-disable-next-line no-unused-expressions
-      void textRef.current.offsetWidth
+      const _ = textRef.current.offsetWidth
       textRef.current.classList.add('active')
     }
 
@@ -138,8 +136,11 @@ export default function GooeyNav({
   ) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      const li = (e.currentTarget as HTMLElement).parentElement!
-      handleClick(new MouseEvent('click') as any, idx)
+      const liElem = (e.currentTarget as HTMLElement).parentElement!
+      handleClick(
+        { currentTarget: liElem } as React.MouseEvent<HTMLLIElement>,
+        idx
+      )
     }
   }
 
@@ -155,7 +156,7 @@ export default function GooeyNav({
       const cur = navRef.current?.querySelectorAll('li')[activeIndex]
       cur && updateEffectPosition(cur)
     })
-    ro.observe(containerRef.current!) 
+    ro.observe(containerRef.current!)
     return () => ro.disconnect()
   }, [activeIndex])
 
