@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import Threads from './Threads'
 import FuzzyText from './FuzzyText'
 import styles from './About.module.css'
 
