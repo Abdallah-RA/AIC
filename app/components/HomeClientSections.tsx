@@ -1,5 +1,4 @@
 // app/components/HomeClientSections.tsx
-'use client'
 
 import React from 'react'
 import Particles      from './Particles'
