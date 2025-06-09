@@ -134,3 +134,30 @@ body {
 .text-rotate-space {
   white-space: pre;
 }
+/* app/globals.css */
+
+/* ANONYMIZATION / DARK SILHOUETTE */
+.anonymous .pc-avatar-content {
+  position: relative;
+  overflow: hidden;
+}
+
+.anonymous .pc-avatar-content .avatar[src*="gravatar.com"] {
+  filter: brightness(0) blur(2px) opacity(0.8);
+  background: none;
+  display: block;
+}
+
+.anonymous .pc-avatar-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.1);
+  pointer-events: none;
+}
+
+.anonymous .pc-card-wrapper {
+  box-shadow:
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 40px rgba(0, 240, 255, 0.2);
+}
