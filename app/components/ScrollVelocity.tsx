@@ -3,7 +3,6 @@
 import React, {
   forwardRef,
   useRef,
-  useEffect,
   CSSProperties,
   RefObject,
 } from 'react'
@@ -73,7 +72,10 @@ const ScrollVelocity = forwardRef<HTMLDivElement, ScrollVelocityProps>(
 
     return (
       <div ref={ref} className={parallaxClassName} style={parallaxStyle}>
-        <motion.div className={scrollerClassName} style={{ x: motionX, ...scrollerStyle }}>
+        <motion.div
+          className={scrollerClassName}
+          style={{ x: motionX, ...scrollerStyle }}
+        >
           {texts.map((txt, i) => (
             <span key={i} className={className}>
               {Array.from({ length: numCopies }).map((_, idx) => (
