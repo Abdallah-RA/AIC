@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build && next export",
+    "build:gh": "next build && next export -o out && mkdir -p out/AIC/_next/static/{css,chunks,media} && cp -r .next/static/css/* out/AIC/_next/static/css/ && cp -r .next/static/chunks/* out/AIC/_next/static/chunks/ && cp -r .next/static/media/* out/AIC/_next/static/media/ 2>/dev/null || true && gh-pages -d out",  
     "export": "next export",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d out",
