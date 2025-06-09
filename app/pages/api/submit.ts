@@ -19,10 +19,16 @@ export async function POST(request: Request) {
     // Proxy back the JSON result and status
     const result = await res.json()
     return NextResponse.json(result, { status: res.status })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('API /submit error:', err)
+
+    const message =
+      err instanceof Error
+        ? err.message
+        : 'Unknown error'
+
     return NextResponse.json(
-      { success: false, error: err.message || 'Unknown error' },
+      { success: false, error: message },
       { status: 500 }
     )
   }
