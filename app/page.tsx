@@ -1,11 +1,10 @@
-// app/page.tsx  (still a Server Component — no 'use client' here)
-'use client'
+// app/page.tsx
 import React from 'react'
-import Header            from './components/Header'
-import About             from './components/About'
-import Features          from './components/Features'
+import Header             from './components/Header'
+import About              from './components/About'
+import Features           from './components/Features'
 import HomeClientSections from './components/HomeClientSections'
-import styles            from './page.module.css'
+import styles             from './page.module.css'
 
 export const metadata = {
   title: 'AIC – Academic Industrial Club',
@@ -32,7 +31,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* 3 + 6) These are client‐only */}
+      {/* 3 + 6) Client-only animated sections */}
       <HomeClientSections />
     </div>
   )
