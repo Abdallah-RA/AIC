@@ -1,4 +1,3 @@
-// app/components/Particles.tsx
 'use client'
 
 import React, { useEffect, useRef } from 'react'
@@ -10,7 +9,10 @@ const defaultColors = ['#ffffff', '#ffffff', '#ffffff']
 function hexToRgb(hex: string): [number, number, number] {
   hex = hex.replace(/^#/, '')
   if (hex.length === 3) {
-    hex = hex.split('').map((c) => c + c).join('')
+    hex = hex
+      .split('')
+      .map((c) => c + c)
+      .join('')
   }
   const int = parseInt(hex, 16)
   const r = ((int >> 16) & 255) / 255
@@ -143,7 +145,7 @@ export default function Particles({
     const count = particleCount
     const positions = new Float32Array(count * 3)
     const randoms = new Float32Array(count * 4)
-    const colors = new Float32Array(count * 3)
+    const colorsArr = new Float32Array(count * 3)
     const palette =
       particleColors && particleColors.length > 0
         ? particleColors
@@ -166,13 +168,13 @@ export default function Particles({
       const col = hexToRgb(
         palette[Math.floor(Math.random() * palette.length)]
       )
-      colors.set(col, i * 3)
+      colorsArr.set(col, i * 3)
     }
 
     const geometry = new Geometry(gl, {
       position: { size: 3, data: positions },
       random: { size: 4, data: randoms },
-      color: { size: 3, data: colors },
+      color: { size: 3, data: colorsArr },
     })
 
     const program = new Program(gl, {
@@ -235,6 +237,7 @@ export default function Particles({
     particleCount,
     particleSpread,
     speed,
+    particleColors,       // ← added here
     moveParticlesOnHover,
     particleHoverFactor,
     alphaParticles,
@@ -244,5 +247,7 @@ export default function Particles({
     disableRotation,
   ])
 
-  return <div ref={containerRef} className={`particles-container ${className}`} />
+  return (
+    <div ref={containerRef} className={`particles-container ${className}`} />
+  )
 }
