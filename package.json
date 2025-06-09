@@ -2,16 +2,16 @@
   "name": "aic-website",
   "version": "0.1.0",
   "private": true,
-  // must match your GH Pages URL path (case-sensitive)
+
   "homepage": "https://abdallah-ra.github.io/AIC",
 
   "scripts": {
     "dev":     "next dev --turbopack",
     "build":   "next build && next export",
     "export":  "next export",
-    // Automatically run `build` before deploying
+
     "predeploy": "npm run build",
-    // Publish the `out/` folder to gh-pages branch
+
     "deploy":  "gh-pages -d out",
     "lint":    "next lint"
   },
