@@ -1,4 +1,3 @@
-// app/components/ProfileCard.tsx
 'use client'
 
 import React, {
@@ -8,6 +7,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react'
+import Image from 'next/image'
 import './ProfileCard.css'
 
 const DEFAULT_BEHIND_GRADIENT =
@@ -21,7 +21,6 @@ const ANIMATION_CONFIG = {
   INITIAL_Y_OFFSET: 60,
 } as const
 
-// Helpers
 const clamp = (v: number, min = 0, max = 100): number =>
   Math.min(Math.max(v, min), max)
 const round = (v: number, p = 3): number =>
@@ -36,7 +35,6 @@ const adjust = (
 const easeInOutCubic = (x: number): number =>
   x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2
 
-// Allow custom properties in style object:
 type CSSVariables = React.CSSProperties & {
   [key: `--${string}`]: string
 }
@@ -103,7 +101,10 @@ const ProfileCardComponent: FC<ProfileCardProps> = ({
     let rafId: number | null = null
 
     const updateCardTransform: Handlers['updateCardTransform'] = (
-      offsetX, offsetY, card, wrap
+      offsetX,
+      offsetY,
+      card,
+      wrap
     ) => {
       const w = card.clientWidth
       const h = card.clientHeight
@@ -116,26 +117,30 @@ const ProfileCardComponent: FC<ProfileCardProps> = ({
         '--pointer-y': `${py}%`,
         '--background-x': `${adjust(px, 0, 100, 35, 65)}%`,
         '--background-y': `${adjust(py, 0, 100, 35, 65)}%`,
-        '--pointer-from-center': `${clamp(Math.hypot(px-50, py-50)/50,0,1)}`,
-        '--pointer-from-top': `${py/100}`,
-        '--pointer-from-left': `${px/100}`,
-        '--rotate-x': `${round(-cy/4)}deg`,
-        '--rotate-y': `${round(cx/5)}deg`,
+        '--pointer-from-center': `${clamp(Math.hypot(px - 50, py - 50) / 50, 0, 1)}`,
+        '--pointer-from-top': `${py / 100}`,
+        '--pointer-from-left': `${px / 100}`,
+        '--rotate-x': `${round(-cy / 4)}deg`,
+        '--rotate-y': `${round(cx / 5)}deg`,
       }
-      Object.entries(props).forEach(([k,v]) =>
+      Object.entries(props).forEach(([k, v]) =>
         wrap.style.setProperty(k, v)
       )
     }
 
     const createSmoothAnimation: Handlers['createSmoothAnimation'] = (
-      dur, startX, startY, card, wrap
+      dur,
+      startX,
+      startY,
+      card,
+      wrap
     ) => {
       const t0 = performance.now()
-      const tx = wrap.clientWidth/2
-      const ty = wrap.clientHeight/2
+      const tx = wrap.clientWidth / 2
+      const ty = wrap.clientHeight / 2
       const loop = (t: number) => {
         const elapsed = t - t0
-        const prog = clamp(elapsed/dur)
+        const prog = clamp(elapsed / dur)
         const eased = easeInOutCubic(prog)
         const cx = adjust(eased, 0, 1, startX, tx)
         const cy = adjust(eased, 0, 1, startY, ty)
@@ -204,7 +209,7 @@ const ProfileCardComponent: FC<ProfileCardProps> = ({
     const wrap = wrapRef.current!
 
     card.addEventListener('pointerenter', handlePointerEnter)
-    card.addEventListener('pointermove', handlePointerMove as any)
+    card.addEventListener('pointermove', handlePointerMove)
     card.addEventListener('pointerleave', handlePointerLeave)
 
     const initX = wrap.clientWidth - ANIMATION_CONFIG.INITIAL_X_OFFSET
@@ -220,7 +225,7 @@ const ProfileCardComponent: FC<ProfileCardProps> = ({
 
     return () => {
       card.removeEventListener('pointerenter', handlePointerEnter)
-      card.removeEventListener('pointermove', handlePointerMove as any)
+      card.removeEventListener('pointermove', handlePointerMove)
       card.removeEventListener('pointerleave', handlePointerLeave)
       animationHandlers.cancelAnimation()
     }
@@ -266,27 +271,30 @@ const ProfileCardComponent: FC<ProfileCardProps> = ({
           <div className="pc-glare" />
 
           <div className="pc-content pc-avatar-content">
-            <img
+            <Image
               className="avatar"
               src={avatarUrl}
               alt={`${name} avatar`}
+              width={100}
+              height={100}
               loading="lazy"
-              onError={(e) => {
-                ;(e.target as HTMLImageElement).style.display = 'none'
+              onError={({ currentTarget }) => {
+                currentTarget.style.display = 'none'
               }}
             />
             {showUserInfo && (
               <div className="pc-user-info">
                 <div className="pc-user-details">
                   <div className="pc-mini-avatar">
-                    <img
+                    <Image
                       src={miniAvatarUrl ?? avatarUrl}
                       alt={`${name} mini avatar`}
+                      width={40}
+                      height={40}
                       loading="lazy"
-                      onError={(e) => {
-                        const img = e.target as HTMLImageElement
-                        img.src = avatarUrl
-                        img.style.opacity = '0.5'
+                      onError={({ currentTarget }) => {
+                        currentTarget.src = avatarUrl
+                        currentTarget.style.opacity = '0.5'
                       }}
                     />
                   </div>
