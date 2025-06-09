@@ -120,7 +120,7 @@ export default function GooeyNav({
     if (textRef.current) {
       textRef.current.classList.remove('active')
       // force reflow
-      const _ = textRef.current.offsetWidth
+      textRef.current.offsetWidth   // ← removed unused '_' assignment
       textRef.current.classList.add('active')
     }
 
@@ -154,7 +154,7 @@ export default function GooeyNav({
     }
     const ro = new ResizeObserver(() => {
       const cur = navRef.current?.querySelectorAll('li')[activeIndex]
-      cur && updateEffectPosition(cur)
+      if (cur) updateEffectPosition(cur)    // ← replaced short-circuit with if-statement
     })
     ro.observe(containerRef.current!)
     return () => ro.disconnect()
