@@ -15,7 +15,8 @@ function cn(...classes: (string | false | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export interface RotatingTextProps extends Omit<MotionProps, 'initial' | 'animate' | 'exit' | 'transition'> {
+export interface RotatingTextProps
+  extends Omit<MotionProps, 'initial' | 'animate' | 'exit' | 'transition'> {
   texts: string[]
   transition?: Transition
   initial?: MotionProps['initial']
@@ -59,11 +60,14 @@ const RotatingText = forwardRef<HTMLSpanElement, RotatingTextProps>((props, ref)
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
 
-  const splitIntoCharacters = (text: string) => {
-    if (typeof Intl !== 'undefined' && (Intl as any).Segmenter) {
-      const segmenter = new (Intl as any).Segmenter('en', { granularity: 'grapheme' })
-      return Array.from(segmenter.segment(text), (s: any) => s.segment)
+  const splitIntoCharacters = (text: string): string[] => {
+    // if Intl.Segmenter is available, use it for proper grapheme breaks
+    if (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function') {
+      const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' })
+      // segment(text) returns Iterable<{ segment: string; index?: number; breakType?: string }>
+      return Array.from(segmenter.segment(text), segment => segment.segment)
     }
+    // fallback to simple split
     return Array.from(text)
   }
 
@@ -146,10 +150,9 @@ const RotatingText = forwardRef<HTMLSpanElement, RotatingTextProps>((props, ref)
       layout
       transition={transition}
     >
-      {/* screen‐reader only text */}
-      <span className="text-rotate-sr-only">
-        {texts[currentTextIndex]}
-      </span>
+      {/* Screen‐reader only text */}
+      <span className="text-rotate-sr-only">{texts[currentTextIndex]}</span>
+
       <AnimatePresence mode={animatePresenceMode} initial={animatePresenceInitial}>
         <motion.div
           key={currentTextIndex}
