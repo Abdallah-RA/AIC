@@ -6,7 +6,7 @@ import About          from './components/About'
 import Features       from './components/Features'
 import Particles      from './components/Particles'
 import ContactSection from './components/ContactSection'
-import styles         from './page.module.css'
+import styles         from '../page.module.css'
 
 export default function Home() {
   return (
