@@ -2,14 +2,14 @@
 'use client'
 
 import React from 'react'
-import Particles from './Particles'
+import Particles      from './Particles'
 import ContactSection from './ContactSection'
-import styles from '../page.module.css'
+import styles         from '../page.module.css'
 
 export default function HomeClientSections() {
   return (
     <>
-      {/* 3) Particles background (client only) */}
+      {/* 3) Particles background */}
       <Particles
         particleCount={300}
         particleSpread={8}
@@ -23,7 +23,7 @@ export default function HomeClientSections() {
         cameraDistance={25}
       />
 
-      {/* 6) Contact + animated tickers (client only) */}
+      {/* 6) Contact + animated tickers */}
       <footer className={styles.footer} id="contact">
         <ContactSection />
         <p>© {new Date().getFullYear()} AIC. All rights reserved.</p>
