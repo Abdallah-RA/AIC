@@ -1,21 +1,23 @@
 'use client'
 
-import React, { useRef } from 'react'
+import React, { useRef, RefObject } from 'react'
 import ScrollVelocity from './ScrollVelocity'
 import ContactForm from './ContactForm'
 import styles from '../page.module.css'
 
 export default function ContactSection() {
-  // we'll use this div as our scroll container for the velocity effect
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  // This one is used for the forwarded `ref` (must be HTMLDivElement)
+  const scrollContainerDivRef = useRef<HTMLDivElement>(null)
+  // And we cast it to RefObject<HTMLElement> for the scrollContainerRef prop
+  const scrollContainerRef = scrollContainerDivRef as RefObject<HTMLElement>
 
   return (
     <section className={styles.contactSection}>
       {/* left animated text */}
       <ScrollVelocity
-        ref={scrollContainerRef}
+        ref={scrollContainerDivRef}
         scrollContainerRef={scrollContainerRef}
-        texts={['\"Have Goals Not  Dreams\"']}
+        texts={['"Have Goals Not Dreams"']}
         velocity={50}
         numCopies={1}
         scrollerClassName={styles.leftScroller}
@@ -26,7 +28,6 @@ export default function ContactSection() {
       <div className={styles.contactFormWrapper}>
         <ContactForm />
       </div>
-
     </section>
   )
 }
