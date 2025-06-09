@@ -9,7 +9,7 @@ import styles from '../page.module.css'
 export default function HomeClientSections() {
   return (
     <>
-      {/* 3) Particles background */}
+      {/* 3) Particles background (client only) */}
       <Particles
         particleCount={300}
         particleSpread={8}
@@ -23,7 +23,7 @@ export default function HomeClientSections() {
         cameraDistance={25}
       />
 
-      {/* 6) Contact + animated tickers */}
+      {/* 6) Contact + animated tickers (client only) */}
       <footer className={styles.footer} id="contact">
         <ContactSection />
         <p>© {new Date().getFullYear()} AIC. All rights reserved.</p>
