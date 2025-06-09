@@ -1,52 +1,127 @@
 // app/page.tsx
 
+'use client'
+
 import React from 'react'
-import Header         from './components/Header'
-import About          from './components/About'
-import Features       from './components/Features'
-import Particles      from './components/Particles'
+import Head from 'next/head'
+import Header from './components/Header'
+import About from './components/About'
+import Features from './components/Features'
+import Particles from './components/Particles'
 import ContactSection from './components/ContactSection'
-import styles         from './page.module.css'
 
 export default function Home() {
   return (
-    <div className={styles.container}>
-      {/* 1) Header */}
-      <Header />
+    <>
+      <Head>
+        <style>{`
+          body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: sans-serif;
+          }
 
-      {/* 2) About section */}
-      <About />
+          .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+          }
 
-      {/* 3) Particles background */}
-      <Particles
-        particleCount={300}
-        particleSpread={8}
-        speed={0.05}
-        particleColors={['#0af', '#0ff', '#a0f']}
-        moveParticlesOnHover
-        particleHoverFactor={2}
-        alphaParticles={false}
-        particleBaseSize={80}
-        sizeRandomness={1}
-        cameraDistance={25}
-      />
+          .main {
+            flex: 1;
+            position: relative;
+            padding: 2rem 1rem;
+            z-index: 1;
+          }
 
-      <main className={styles.main}>
-        {/* 4) Domains / Features */}
-        <Features />
+          .aboutTeams {
+            text-align: center;
+            margin: 4rem 0;
+            opacity: 0.6;
+          }
 
-        {/* 5) Future Interviews section */}
-        <section id="about-teams" className={styles.aboutTeams}>
-          <h2>Future Interviews for Teams</h2>
-          <p>More info coming soon—stay tuned!</p>
-        </section>
-      </main>
+          .aboutTeams h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+          }
 
-      {/* 6) Contact + animated tickers */}
-      <footer className={styles.footer} id="contact">
-        <ContactSection />
-        <p>© {new Date().getFullYear()} AIC. All rights reserved.</p>
-      </footer>
-    </div>
+          .aboutTeams p {
+            font-size: 1rem;
+          }
+
+          .footer {
+            background: #111;
+            padding: 2rem 1rem;
+            text-align: center;
+            color: #bbb;
+            opacity: 0.8;
+          }
+
+          .particles-container,
+          .threads-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+          }
+
+          .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3rem;
+            margin: 3rem 0;
+          }
+
+          .featureItem {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+          }
+
+          .profileCard {
+            width: 300px;
+          }
+        `}</style>
+      </Head>
+
+      <div className="container">
+        <Header />
+        <About />
+
+        <Particles
+          particleCount={300}
+          particleSpread={8}
+          speed={0.05}
+          particleColors={['#0af', '#0ff', '#a0f']}
+          moveParticlesOnHover
+          particleHoverFactor={2}
+          alphaParticles={false}
+          particleBaseSize={80}
+          sizeRandomness={1}
+          cameraDistance={25}
+        />
+
+        <main className="main">
+          <Features />
+
+          <section id="about-teams" className="aboutTeams">
+            <h2>Future Interviews for Teams</h2>
+            <p>More info coming soon—stay tuned!</p>
+          </section>
+        </main>
+
+        <footer className="footer" id="contact">
+          <ContactSection />
+          <p>© {new Date().getFullYear()} AIC. All rights reserved.</p>
+        </footer>
+      </div>
+    </>
   )
 }
