@@ -88,7 +88,9 @@ export default function GooeyNav({
         element.appendChild(particle)
         requestAnimationFrame(() => element.classList.add('active'))
         setTimeout(() => {
-          try { element.removeChild(particle) } catch {}
+          try {
+            element.removeChild(particle)
+          } catch {}
         }, p.time)
       }, 30)
     }
@@ -120,7 +122,7 @@ export default function GooeyNav({
     if (textRef.current) {
       textRef.current.classList.remove('active')
       // force reflow
-      textRef.current.offsetWidth   // ← removed unused '_' assignment
+      textRef.current.getBoundingClientRect()
       textRef.current.classList.add('active')
     }
 
@@ -154,7 +156,7 @@ export default function GooeyNav({
     }
     const ro = new ResizeObserver(() => {
       const cur = navRef.current?.querySelectorAll('li')[activeIndex]
-      if (cur) updateEffectPosition(cur)    // ← replaced short-circuit with if-statement
+      if (cur) updateEffectPosition(cur)
     })
     ro.observe(containerRef.current!)
     return () => ro.disconnect()
