@@ -220,7 +220,9 @@ export default function PixelCard({
 
     initPixels()
     const obs = new ResizeObserver(initPixels)
-    containerRef.current && obs.observe(containerRef.current)
+    if (containerRef.current) {
+      obs.observe(containerRef.current)
+    }
 
     const el = containerRef.current
     el?.addEventListener('mouseenter', handleEnter)
