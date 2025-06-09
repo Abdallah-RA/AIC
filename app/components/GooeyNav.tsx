@@ -36,7 +36,6 @@ export default function GooeyNav({
   const textRef      = useRef<HTMLSpanElement>(null)
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex)
 
-  // small random helper
   const noise = (n = 1) => n / 2 - Math.random() * n
 
   const getXY = (distance: number, pointIndex: number, totalPoints: number) => {
@@ -104,7 +103,6 @@ export default function GooeyNav({
     const cRect = containerRef.current.getBoundingClientRect()
     const pos   = el.getBoundingClientRect()
 
-    // Only copy the four properties we need:
     const newStyles = {
       left:   `${pos.x - cRect.x}px`,
       top:    `${pos.y - cRect.y}px`,
@@ -118,18 +116,14 @@ export default function GooeyNav({
     textRef.current.innerText = el.textContent || ''
   }
 
-  const handleClick = (
-    e: React.MouseEvent<HTMLLIElement>,
-    idx: number
-  ) => {
+  // central selection logic
+  const handleSelect = (li: Element, idx: number) => {
     if (activeIndex === idx) return
     setActiveIndex(idx)
-    const li = e.currentTarget
     updateEffectPosition(li)
 
     if (textRef.current) {
       textRef.current.classList.remove('active')
-      // force reflow
       void textRef.current.offsetWidth
       textRef.current.classList.add('active')
     }
@@ -140,14 +134,21 @@ export default function GooeyNav({
     }
   }
 
+  const handleClick = (
+    e: React.MouseEvent<HTMLLIElement>,
+    idx: number
+  ) => {
+    handleSelect(e.currentTarget, idx)
+  }
+
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLAnchorElement>,
     idx: number
   ) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      const li = (e.currentTarget as HTMLElement).parentElement!
-      handleClick({ currentTarget: li } as any, idx)
+      const li = e.currentTarget.parentElement
+      if (li) handleSelect(li, idx)
     }
   }
 
@@ -177,7 +178,10 @@ export default function GooeyNav({
               className={activeIndex === i ? 'active' : ''}
               onClick={e => handleClick(e, i)}
             >
-              <a href={it.href} onKeyDown={e => handleKeyDown(e, i)}>
+              <a
+                href={it.href}
+                onKeyDown={e => handleKeyDown(e, i)}
+              >
                 {it.label}
               </a>
             </li>
