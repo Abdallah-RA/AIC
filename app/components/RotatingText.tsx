@@ -1,5 +1,4 @@
-// components/RotatingText.tsx
-"use client"
+'use client'
 
 import React, {
   forwardRef,
@@ -8,49 +7,49 @@ import React, {
   useImperativeHandle,
   useMemo,
   useState,
-} from "react"
-import { motion, AnimatePresence } from "framer-motion"
+} from 'react'
+import { motion, AnimatePresence, MotionProps, Transition, AnimatePresenceProps } from 'framer-motion'
 
 // simple helper to join classes
 function cn(...classes: (string | false | undefined)[]) {
-  return classes.filter(Boolean).join(" ")
+  return classes.filter(Boolean).join(' ')
 }
 
-interface RotatingTextProps {
+export interface RotatingTextProps extends Omit<MotionProps, 'initial' | 'animate' | 'exit' | 'transition'> {
   texts: string[]
-  transition?: any
-  initial?: any
-  animate?: any
-  exit?: any
-  animatePresenceMode?: "sync" | "popLayout" | "popLayout" | "wait"
+  transition?: Transition
+  initial?: MotionProps['initial']
+  animate?: MotionProps['animate']
+  exit?: MotionProps['exit']
+  animatePresenceMode?: AnimatePresenceProps['mode']
   animatePresenceInitial?: boolean
   rotationInterval?: number
   staggerDuration?: number
-  staggerFrom?: "first" | "last" | "center" | "random" | number
+  staggerFrom?: 'first' | 'last' | 'center' | 'random' | number
   loop?: boolean
   auto?: boolean
-  splitBy?: "characters" | "words" | "lines" | string
+  splitBy?: 'characters' | 'words' | 'lines' | string
   onNext?: (index: number) => void
   mainClassName?: string
   splitLevelClassName?: string
   elementLevelClassName?: string
 }
 
-const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
+const RotatingText = forwardRef<HTMLSpanElement, RotatingTextProps>((props, ref) => {
   const {
     texts,
-    transition = { type: "spring", damping: 25, stiffness: 300 },
-    initial = { y: "100%", opacity: 0 },
+    transition = { type: 'spring', damping: 25, stiffness: 300 },
+    initial = { y: '100%', opacity: 0 },
     animate = { y: 0, opacity: 1 },
-    exit = { y: "-120%", opacity: 0 },
-    animatePresenceMode = "wait",
+    exit = { y: '-120%', opacity: 0 },
+    animatePresenceMode = 'wait',
     animatePresenceInitial = false,
     rotationInterval = 2000,
     staggerDuration = 0,
-    staggerFrom = "first",
+    staggerFrom = 'first',
     loop = true,
     auto = true,
-    splitBy = "characters",
+    splitBy = 'characters',
     onNext,
     mainClassName,
     splitLevelClassName,
@@ -61,30 +60,30 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
 
   const splitIntoCharacters = (text: string) => {
-    if (typeof Intl !== "undefined" && Intl.Segmenter) {
-      const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" })
-      return Array.from(segmenter.segment(text), (s) => s.segment)
+    if (typeof Intl !== 'undefined' && (Intl as any).Segmenter) {
+      const segmenter = new (Intl as any).Segmenter('en', { granularity: 'grapheme' })
+      return Array.from(segmenter.segment(text), (s: any) => s.segment)
     }
     return Array.from(text)
   }
 
   const elements = useMemo(() => {
     const t = texts[currentTextIndex]
-    if (splitBy === "characters") {
-      const words = t.split(" ")
+    if (splitBy === 'characters') {
+      const words = t.split(' ')
       return words.map((w, i) => ({
         characters: splitIntoCharacters(w),
         needsSpace: i !== words.length - 1,
       }))
     }
-    if (splitBy === "words") {
-      return t.split(" ").map((w, i, arr) => ({
+    if (splitBy === 'words') {
+      return t.split(' ').map((w, i, arr) => ({
         characters: [w],
         needsSpace: i !== arr.length - 1,
       }))
     }
-    if (splitBy === "lines") {
-      return t.split("\n").map((l, i, arr) => ({
+    if (splitBy === 'lines') {
+      return t.split('\n').map((l, i, arr) => ({
         characters: [l],
         needsSpace: i !== arr.length - 1,
       }))
@@ -97,17 +96,17 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
 
   const getStaggerDelay = useCallback(
     (idx: number, total: number) => {
-      if (staggerFrom === "first") return idx * staggerDuration
-      if (staggerFrom === "last") return (total - 1 - idx) * staggerDuration
-      if (staggerFrom === "center") {
+      if (staggerFrom === 'first') return idx * staggerDuration
+      if (staggerFrom === 'last') return (total - 1 - idx) * staggerDuration
+      if (staggerFrom === 'center') {
         const center = Math.floor(total / 2)
         return Math.abs(center - idx) * staggerDuration
       }
-      if (staggerFrom === "random") {
+      if (staggerFrom === 'random') {
         const rand = Math.floor(Math.random() * total)
         return Math.abs(rand - idx) * staggerDuration
       }
-      if (typeof staggerFrom === "number") {
+      if (typeof staggerFrom === 'number') {
         return Math.abs(staggerFrom - idx) * staggerDuration
       }
       return 0
@@ -118,19 +117,17 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
   const handleIndexChange = useCallback(
     (newIdx: number) => {
       setCurrentTextIndex(newIdx)
-      onNext && onNext(newIdx)
+      onNext?.(newIdx)
     },
     [onNext]
   )
 
   const next = useCallback(() => {
-    const nextIdx =
-      currentTextIndex === texts.length - 1
-        ? loop
-          ? 0
-          : currentTextIndex
-        : currentTextIndex + 1
-    nextIdx !== currentTextIndex && handleIndexChange(nextIdx)
+    const atEnd = currentTextIndex === texts.length - 1
+    const nextIdx = atEnd ? (loop ? 0 : currentTextIndex) : currentTextIndex + 1
+    if (nextIdx !== currentTextIndex) {
+      handleIndexChange(nextIdx)
+    }
   }, [currentTextIndex, texts.length, loop, handleIndexChange])
 
   useEffect(() => {
@@ -139,30 +136,26 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
     return () => clearInterval(id)
   }, [next, rotationInterval, auto])
 
-  useImperativeHandle(
-    ref,
-    () => ({ next }),
-    [next]
-  )
+  useImperativeHandle(ref, () => ({ next }), [next])
 
   return (
     <motion.span
-      className={cn("text-rotate", mainClassName)}
+      ref={ref}
+      className={cn('text-rotate', mainClassName)}
       {...rest}
       layout
       transition={transition}
     >
+      {/* screen‐reader only text */}
       <span className="text-rotate-sr-only">
         {texts[currentTextIndex]}
       </span>
-      <AnimatePresence
-        mode={animatePresenceMode as any}
-        initial={animatePresenceInitial}
-      >
+      <AnimatePresence mode={animatePresenceMode} initial={animatePresenceInitial}>
         <motion.div
           key={currentTextIndex}
           className={cn(
-            splitBy === "lines" ? "text-rotate-lines" : "text-rotate"
+            splitBy === 'lines' ? 'text-rotate-lines' : 'text-rotate',
+            splitLevelClassName
           )}
           layout
           aria-hidden="true"
@@ -171,11 +164,9 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
             const prevChars = arr
               .slice(0, wIdx)
               .reduce((sum, w) => sum + w.characters.length, 0)
+
             return (
-              <span
-                key={wIdx}
-                className={cn("text-rotate-word", splitLevelClassName)}
-              >
+              <span key={wIdx} className="text-rotate-word">
                 {wordObj.characters.map((ch, cIdx) => (
                   <motion.span
                     key={cIdx}
@@ -189,17 +180,12 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
                         arr.reduce((a, w) => a + w.characters.length, 0)
                       ),
                     }}
-                    className={cn(
-                      "text-rotate-element",
-                      elementLevelClassName
-                    )}
+                    className={cn('text-rotate-element', elementLevelClassName)}
                   >
                     {ch}
                   </motion.span>
                 ))}
-                {wordObj.needsSpace && (
-                  <span className="text-rotate-space"> </span>
-                )}
+                {wordObj.needsSpace && <span className="text-rotate-space"> </span>}
               </span>
             )
           })}
@@ -209,5 +195,5 @@ const RotatingText = forwardRef((props: RotatingTextProps, ref) => {
   )
 })
 
-RotatingText.displayName = "RotatingText"
+RotatingText.displayName = 'RotatingText'
 export default RotatingText
