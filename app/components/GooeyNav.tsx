@@ -1,3 +1,4 @@
+// app/components/GooeyNav.tsx
 'use client'
 
 import React, { useRef, useEffect, useState } from 'react'
@@ -30,11 +31,12 @@ export default function GooeyNav({
   initialActiveIndex = 0,
 }: GooeyNavProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const navRef = useRef<HTMLUListElement>(null)
-  const filterRef = useRef<HTMLSpanElement>(null)
-  const textRef = useRef<HTMLSpanElement>(null)
+  const navRef       = useRef<HTMLUListElement>(null)
+  const filterRef    = useRef<HTMLSpanElement>(null)
+  const textRef      = useRef<HTMLSpanElement>(null)
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex)
 
+  // small random helper
   const noise = (n = 1) => n / 2 - Math.random() * n
 
   const getXY = (distance: number, pointIndex: number, totalPoints: number) => {
@@ -46,11 +48,13 @@ export default function GooeyNav({
     const rotate = noise(r / 10)
     return {
       start: getXY(d[0], particleCount - i, particleCount),
-      end: getXY(d[1] + noise(7), particleCount - i, particleCount),
-      time: t,
+      end:   getXY(d[1] + noise(7), particleCount - i, particleCount),
+      time:  t,
       scale: 1 + noise(0.2),
       color: colors[Math.floor(Math.random() * colors.length)],
-      rotate: rotate > 0 ? (rotate + r / 20) * 10 : (rotate - r / 20) * 10,
+      rotate: rotate > 0
+        ? (rotate + r / 20) * 10
+        : (rotate - r / 20) * 10,
     }
   }
 
@@ -69,17 +73,17 @@ export default function GooeyNav({
           particleR
         )
         const particle = document.createElement('span')
-        const point = document.createElement('span')
+        const point    = document.createElement('span')
         particle.classList.add('particle')
         Object.entries({
           '--start-x': `${p.start[0]}px`,
           '--start-y': `${p.start[1]}px`,
-          '--end-x': `${p.end[0]}px`,
-          '--end-y': `${p.end[1]}px`,
-          '--time': `${p.time}ms`,
-          '--scale': `${p.scale}`,
-          '--color': `var(--color-${p.color}, white)`,
-          '--rotate': `${p.rotate}deg`,
+          '--end-x':   `${p.end[0]}px`,
+          '--end-y':   `${p.end[1]}px`,
+          '--time':    `${p.time}ms`,
+          '--scale':   `${p.scale}`,
+          '--color':   `var(--color-${p.color}, white)`,
+          '--rotate':  `${p.rotate}deg`,
         }).forEach(([prop, val]) =>
           particle.style.setProperty(prop, val)
         )
@@ -88,9 +92,7 @@ export default function GooeyNav({
         element.appendChild(particle)
         requestAnimationFrame(() => element.classList.add('active'))
         setTimeout(() => {
-          try {
-            element.removeChild(particle)
-          } catch {}
+          try { element.removeChild(particle) } catch {}
         }, p.time)
       }, 30)
     }
@@ -98,15 +100,21 @@ export default function GooeyNav({
 
   const updateEffectPosition = (el: Element) => {
     if (!containerRef.current || !filterRef.current || !textRef.current) return
+
     const cRect = containerRef.current.getBoundingClientRect()
-    const pos = el.getBoundingClientRect()
-    Object.assign(filterRef.current.style, {
-      left: `${pos.x - cRect.x}px`,
-      top: `${pos.y - cRect.y}px`,
-      width: `${pos.width}px`,
+    const pos   = el.getBoundingClientRect()
+
+    // Only copy the four properties we need:
+    const newStyles = {
+      left:   `${pos.x - cRect.x}px`,
+      top:    `${pos.y - cRect.y}px`,
+      width:  `${pos.width}px`,
       height: `${pos.height}px`,
-    })
-    Object.assign(textRef.current.style, filterRef.current.style)
+    }
+
+    Object.assign(filterRef.current.style, newStyles)
+    Object.assign(textRef.current.style,  newStyles)
+
     textRef.current.innerText = el.textContent || ''
   }
 
@@ -122,7 +130,7 @@ export default function GooeyNav({
     if (textRef.current) {
       textRef.current.classList.remove('active')
       // force reflow
-      textRef.current.getBoundingClientRect()
+      void textRef.current.offsetWidth
       textRef.current.classList.add('active')
     }
 
@@ -138,17 +146,14 @@ export default function GooeyNav({
   ) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault()
-      const liElem = (e.currentTarget as HTMLElement).parentElement!
-      handleClick(
-        { currentTarget: liElem } as React.MouseEvent<HTMLLIElement>,
-        idx
-      )
+      const li = (e.currentTarget as HTMLElement).parentElement!
+      handleClick({ currentTarget: li } as any, idx)
     }
   }
 
   useEffect(() => {
     if (!navRef.current) return
-    const lis = Array.from(navRef.current.querySelectorAll('li'))
+    const lis      = Array.from(navRef.current.querySelectorAll('li'))
     const activeLi = lis[activeIndex]
     if (activeLi) {
       updateEffectPosition(activeLi)
@@ -170,9 +175,9 @@ export default function GooeyNav({
             <li
               key={i}
               className={activeIndex === i ? 'active' : ''}
-              onClick={(e) => handleClick(e, i)}
+              onClick={e => handleClick(e, i)}
             >
-              <a href={it.href} onKeyDown={(e) => handleKeyDown(e, i)}>
+              <a href={it.href} onKeyDown={e => handleKeyDown(e, i)}>
                 {it.label}
               </a>
             </li>
@@ -180,7 +185,7 @@ export default function GooeyNav({
         </ul>
       </nav>
       <span className="effect filter" ref={filterRef} />
-      <span className="effect text" ref={textRef} />
+      <span className="effect text"   ref={textRef} />
     </div>
   )
 }
