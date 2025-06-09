@@ -1,11 +1,11 @@
-// app/components/ContactForm.tsx
 'use client'
 
 import React, { useState, FormEvent, ChangeEvent } from 'react'
 import StarBorder from './StarBorder'
 import styles from './ContactForm.module.css'
 
-const API_ENDPOINT = '/api/submit'
+// ✅ Use direct GAS endpoint — no /api
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwGt6CF6ludvrozBeoISWqxTeyTjDVA-IOq9LVPqarxclIsnd_tBehA0QS-aaaSRUlVbw/exec'
 
 type FormData = {
   name: string
@@ -28,30 +28,33 @@ export default function ContactForm() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setSubmitting(true)
+ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  setSubmitting(true)
 
-    try {
-      const res = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-      const json = await res.json()
-      if (!res.ok || json.success !== true) {
-        throw new Error(json.error || 'Submission failed')
-      }
-      alert('🎉 Thanks for your interst in AIC!')
-      setFormData({ name: '', universityId: '', email: '', team: 'hardware' })
-    } catch (err: unknown) {
-      console.error('Submission error:', err)
-      const message = err instanceof Error ? err.message : 'Unknown error'
-      alert(`Oops! ${message}`)
-    } finally {
-      setSubmitting(false)
-    }
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors', // <-- this avoids CORS errors!
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData),
+    })
+
+    alert('🎉 Form submitted! Thanks for your interst in AIC.')
+    setFormData({
+      name: '',
+      universityId: '',
+      email: '',
+      team: 'hardware',
+    })
+  } catch (err: unknown) {
+    console.error('Submission error:', err)
+    alert('Oops! Something went wrong.')
+  } finally {
+    setSubmitting(false)
   }
+}
+
 
   return (
     <StarBorder as="div" className={styles.wrapper} color="#0af" speed="8s">
