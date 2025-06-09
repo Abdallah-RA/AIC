@@ -1,12 +1,9 @@
-// next.config.js
+const basePath = process.env.BASE_PATH || '';
 
-const isProd = process.env.NODE_ENV === 'production'
-
-const basePath = isProd ? process.env.BASE_PATH || '/AIC' : ''
-
+/** @type {import('next').NextConfig} */
 module.exports = {
   output: 'export',
   basePath,
-  assetPrefix: basePath + '/',
+  assetPrefix: `${basePath}/`,
   trailingSlash: true,
 }
