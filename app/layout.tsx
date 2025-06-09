@@ -1,8 +1,18 @@
 // app/layout.tsx
-import './globals.css'
-import { ReactNode } from 'react'
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+import './globals.css'
+import React from 'react'
+
+export const metadata = {
+  title: 'AIC – Academic Industrial Club',
+  description: 'Connecting Students and Industry',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
     <html lang="en">
       <body>{children}</body>
