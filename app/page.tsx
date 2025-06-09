@@ -1,4 +1,5 @@
 // app/page.tsx  (still a Server Component — no 'use client' here)
+'use client'
 import React from 'react'
 import Header            from './components/Header'
 import About             from './components/About'
