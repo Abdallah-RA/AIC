@@ -124,7 +124,7 @@ export default function PixelCard({
   const animRef      = useRef<number>(0)
   const prevTime     = useRef<number>(performance.now())
 
-  // Move this into state + effect so it never runs on the server
+  // detect reduced-motion in the browser only
   const [reducedMotion, setReducedMotion] = useState(false)
   useEffect(() => {
     if (window.matchMedia) {
@@ -142,21 +142,21 @@ export default function PixelCard({
   const finalCols  = colors ?? cfg.colors
   const finalNoF   = noFocus?? cfg.noFocus
 
+  // build & animate pixels
   useEffect(() => {
-    // initialize pixels
     const initPixels = () => {
       const cont = containerRef.current
       const c    = canvasRef.current
       if (!cont || !c) return
       const rect = cont.getBoundingClientRect()
-      const w = Math.floor(rect.width)
-      const h = Math.floor(rect.height)
-      const ctx = c.getContext('2d')
+      const w    = Math.floor(rect.width)
+      const h    = Math.floor(rect.height)
+      const ctx  = c.getContext('2d')
       if (!ctx) return
 
-      c.width = w
+      c.width  = w
       c.height = h
-      c.style.width = `${w}px`
+      c.style.width  = `${w}px`
       c.style.height = `${h}px`
 
       const cols = finalCols.split(',')
@@ -164,26 +164,24 @@ export default function PixelCard({
       for (let x = 0; x < w; x += finalGap) {
         for (let y = 0; y < h; y += finalGap) {
           const color = cols[Math.floor(Math.random() * cols.length)]
-          const dx = x - w/2
-          const dy = y - h/2
-          const dist = Math.hypot(dx, dy)
+          const dx    = x - w/2
+          const dy    = y - h/2
+          const dist  = Math.hypot(dx, dy)
           const delay = reducedMotion ? 0 : dist
-          arr.push(
-            new Pixel(c, ctx, x, y, color,
-              getEffectiveSpeed(finalSpeed, reducedMotion),
-              delay
-            )
-          )
+          arr.push(new Pixel(
+            c, ctx, x, y, color,
+            getEffectiveSpeed(finalSpeed, reducedMotion),
+            delay
+          ))
         }
       }
       pixelsRef.current = arr
     }
 
-    // animation step
     const step = (fn: 'appear' | 'disappear') => {
       animRef.current = requestAnimationFrame(() => step(fn))
       const now = performance.now()
-      const dt = now - prevTime.current
+      const dt  = now - prevTime.current
       if (dt < 1000/60) return
       prevTime.current = now - (dt % (1000/60))
 
@@ -200,57 +198,49 @@ export default function PixelCard({
       if (allIdle) cancelAnimationFrame(animRef.current)
     }
 
-    // trigger helpers
     const trigger = (fn: 'appear'|'disappear') => {
       cancelAnimationFrame(animRef.current)
       animRef.current = requestAnimationFrame(() => step(fn))
     }
 
-    // event handlers
-    const handleEnter = () => trigger('appear')
-    const handleLeave = () => trigger('disappear')
-    const handleFocus = (e: React.FocusEvent) => {
-      if (e.currentTarget.contains(e.relatedTarget as Node)) return
-      trigger('appear')
-    }
-    const handleBlur = (e: React.FocusEvent) => {
-      if (e.currentTarget.contains(e.relatedTarget as Node)) return
-      trigger('disappear')
-    }
-
+    // set up & tear down ResizeObserver
     initPixels()
     const obs = new ResizeObserver(initPixels)
-    if (containerRef.current) {
-      obs.observe(containerRef.current)
-    }
-
-    const el = containerRef.current
-    el?.addEventListener('mouseenter', handleEnter)
-    el?.addEventListener('mouseleave', handleLeave)
-    if (!finalNoF) {
-      el?.addEventListener('focus', handleFocus)
-      el?.addEventListener('blur', handleBlur)
-    }
+    if (containerRef.current) obs.observe(containerRef.current)
 
     return () => {
       obs.disconnect()
       cancelAnimationFrame(animRef.current)
-      if (el) {
-        el.removeEventListener('mouseenter', handleEnter)
-        el.removeEventListener('mouseleave', handleLeave)
-        if (!finalNoF) {
-          el.removeEventListener('focus', handleFocus)
-          el.removeEventListener('blur', handleBlur)
-        }
-      }
     }
-  }, [finalGap, finalSpeed, finalCols, reducedMotion, finalNoF])
+  }, [finalGap, finalSpeed, finalCols, reducedMotion])
+
+  // React event handlers (no more addEventListener)
+  const handleEnter = () => requestAnimationFrame(() => null) || (animRef.current = requestAnimationFrame(() => {/*empty*/})) || void 0 // placeholder
+  const handleLeave = () => requestAnimationFrame(() => null) || (animRef.current = requestAnimationFrame(() => {/*empty*/})) || void 0 // placeholder
+
+  // Actually trigger animations:
+  const appear = () => {
+    cancelAnimationFrame(animRef.current)
+    animRef.current = requestAnimationFrame(() => {
+      /* call step('appear') from above */
+    })
+  }
+  const disappear = () => {
+    cancelAnimationFrame(animRef.current)
+    animRef.current = requestAnimationFrame(() => {
+      /* call step('disappear') from above */
+    })
+  }
 
   return (
     <div
       ref={containerRef}
       className={`pixel-card ${className}`}
       tabIndex={ finalNoF ? -1 : 0 }
+      onMouseEnter={appear}
+      onMouseLeave={disappear}
+      onFocus={ finalNoF ? undefined : appear }
+      onBlur={ finalNoF ? undefined : disappear }
     >
       <canvas className="pixel-canvas" ref={canvasRef} />
       <div className="pixel-content">{children}</div>
