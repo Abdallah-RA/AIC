@@ -1,35 +1,15 @@
 // app/components/PixelCard.tsx
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './PixelCard.css'
 
 /** Configuration variants */
 const VARIANTS = {
-  default: {
-    gap: 5,
-    speed: 35,
-    colors: "#f8fafc,#f1f5f9,#cbd5e1",
-    noFocus: false,
-  },
-  blue: {
-    gap: 10,
-    speed: 25,
-    colors: "#e0f2fe,#7dd3fc,#0ea5e9",
-    noFocus: false,
-  },
-  yellow: {
-    gap: 3,
-    speed: 20,
-    colors: "#fef08a,#fde047,#eab308",
-    noFocus: false,
-  },
-  pink: {
-    gap: 6,
-    speed: 80,
-    colors: "#fecdd3,#fda4af,#e11d48",
-    noFocus: true,
-  },
+  default: { gap: 5, speed: 35, colors: "#f8fafc,#f1f5f9,#cbd5e1", noFocus: false },
+  blue:    { gap: 10, speed: 25, colors: "#e0f2fe,#7dd3fc,#0ea5e9", noFocus: false },
+  yellow:  { gap: 3,  speed: 20, colors: "#fef08a,#fde047,#eab308", noFocus: false },
+  pink:    { gap: 6,  speed: 80, colors: "#fecdd3,#fda4af,#e11d48", noFocus: true  },
 } as const
 type VariantKey = keyof typeof VARIANTS
 
@@ -138,115 +118,140 @@ export default function PixelCard({
   className = '',
   children,
 }: PixelCardProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const canvasRef    = useRef<HTMLCanvasElement | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const canvasRef    = useRef<HTMLCanvasElement>(null)
   const pixelsRef    = useRef<Pixel[]>([])
   const animRef      = useRef<number>(0)
   const prevTime     = useRef<number>(performance.now())
-  const reducedMotion= useRef<boolean>(
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  ).current
 
-  const cfg        = VARIANTS[variant]    ?? VARIANTS.default
+  // Move this into state + effect so it never runs on the server
+  const [reducedMotion, setReducedMotion] = useState(false)
+  useEffect(() => {
+    if (window.matchMedia) {
+      const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
+      setReducedMotion(mql.matches)
+      const onChange = (e: MediaQueryListEvent) => setReducedMotion(e.matches)
+      mql.addEventListener('change', onChange)
+      return () => mql.removeEventListener('change', onChange)
+    }
+  }, [])
+
+  const cfg        = VARIANTS[variant] ?? VARIANTS.default
   const finalGap   = gap    ?? cfg.gap
   const finalSpeed = speed  ?? cfg.speed
   const finalCols  = colors ?? cfg.colors
   const finalNoF   = noFocus?? cfg.noFocus
 
-  const initPixels = () => {
-    const cont = containerRef.current
-    const c    = canvasRef.current
-    if (!cont || !c) return
-
-    const rect = cont.getBoundingClientRect()
-    const w = Math.floor(rect.width)
-    const h = Math.floor(rect.height)
-    const ctx = c.getContext('2d')
-    if (!ctx) return
-
-    c.width  = w
-    c.height = h
-    c.style.width  = `${w}px`
-    c.style.height = `${h}px`
-
-    const cols = finalCols.split(',')
-    const arr: Pixel[] = []
-    for (let x = 0; x < w; x += finalGap) {
-      for (let y = 0; y < h; y += finalGap) {
-        const color = cols[Math.floor(Math.random() * cols.length)]
-        const dx = x - w/2
-        const dy = y - h/2
-        const dist = Math.hypot(dx, dy)
-        const delay = reducedMotion ? 0 : dist
-        arr.push(new Pixel(c, ctx, x, y, color,
-          getEffectiveSpeed(finalSpeed, reducedMotion),
-          delay))
-      }
-    }
-    pixelsRef.current = arr
-  }
-
-  const step = (fn: 'appear' | 'disappear') => {
-    animRef.current = requestAnimationFrame(()=> step(fn))
-    const now = performance.now()
-    const dt = now - prevTime.current
-    if (dt < 1000/60) return
-    prevTime.current = now - (dt % (1000/60))
-
-    const c = canvasRef.current
-    const ctx = c?.getContext('2d')
-    if (!c || !ctx) return
-    ctx.clearRect(0,0,c.width,c.height)
-
-    let allIdle = true
-    for (const px of pixelsRef.current) {
-      px[fn]()
-      if (!px.isIdle) allIdle = false
-    }
-    if (allIdle) cancelAnimationFrame(animRef.current)
-  }
-
-  const trigger = (fn: 'appear'|'disappear') => {
-    cancelAnimationFrame(animRef.current)
-    animRef.current = requestAnimationFrame(()=>step(fn))
-  }
-
-  const handleEnter = () => trigger('appear')
-  const handleLeave = () => trigger('disappear')
-  const handleFocus = (e: React.FocusEvent) => {
-    if (e.currentTarget.contains(e.relatedTarget as Node)) return
-    trigger('appear')
-  }
-  const handleBlur = (e: React.FocusEvent) => {
-    if (e.currentTarget.contains(e.relatedTarget as Node)) return
-    trigger('disappear')
-  }
-
   useEffect(() => {
+    // initialize pixels
+    const initPixels = () => {
+      const cont = containerRef.current
+      const c    = canvasRef.current
+      if (!cont || !c) return
+      const rect = cont.getBoundingClientRect()
+      const w = Math.floor(rect.width)
+      const h = Math.floor(rect.height)
+      const ctx = c.getContext('2d')
+      if (!ctx) return
+
+      c.width = w
+      c.height = h
+      c.style.width = `${w}px`
+      c.style.height = `${h}px`
+
+      const cols = finalCols.split(',')
+      const arr: Pixel[] = []
+      for (let x = 0; x < w; x += finalGap) {
+        for (let y = 0; y < h; y += finalGap) {
+          const color = cols[Math.floor(Math.random() * cols.length)]
+          const dx = x - w/2
+          const dy = y - h/2
+          const dist = Math.hypot(dx, dy)
+          const delay = reducedMotion ? 0 : dist
+          arr.push(
+            new Pixel(c, ctx, x, y, color,
+              getEffectiveSpeed(finalSpeed, reducedMotion),
+              delay
+            )
+          )
+        }
+      }
+      pixelsRef.current = arr
+    }
+
+    // animation step
+    const step = (fn: 'appear' | 'disappear') => {
+      animRef.current = requestAnimationFrame(() => step(fn))
+      const now = performance.now()
+      const dt = now - prevTime.current
+      if (dt < 1000/60) return
+      prevTime.current = now - (dt % (1000/60))
+
+      const c   = canvasRef.current
+      const ctx = c?.getContext('2d')
+      if (!c || !ctx) return
+      ctx.clearRect(0, 0, c.width, c.height)
+
+      let allIdle = true
+      for (const px of pixelsRef.current) {
+        px[fn]()
+        if (!px.isIdle) allIdle = false
+      }
+      if (allIdle) cancelAnimationFrame(animRef.current)
+    }
+
+    // trigger helpers
+    const trigger = (fn: 'appear'|'disappear') => {
+      cancelAnimationFrame(animRef.current)
+      animRef.current = requestAnimationFrame(() => step(fn))
+    }
+
+    // event handlers
+    const handleEnter = () => trigger('appear')
+    const handleLeave = () => trigger('disappear')
+    const handleFocus = (e: React.FocusEvent) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node)) return
+      trigger('appear')
+    }
+    const handleBlur = (e: React.FocusEvent) => {
+      if (e.currentTarget.contains(e.relatedTarget as Node)) return
+      trigger('disappear')
+    }
+
     initPixels()
     const obs = new ResizeObserver(initPixels)
-    if (containerRef.current) obs.observe(containerRef.current)
+    containerRef.current && obs.observe(containerRef.current)
+
+    const el = containerRef.current
+    el?.addEventListener('mouseenter', handleEnter)
+    el?.addEventListener('mouseleave', handleLeave)
+    if (!finalNoF) {
+      el?.addEventListener('focus', handleFocus)
+      el?.addEventListener('blur', handleBlur)
+    }
+
     return () => {
       obs.disconnect()
       cancelAnimationFrame(animRef.current)
+      if (el) {
+        el.removeEventListener('mouseenter', handleEnter)
+        el.removeEventListener('mouseleave', handleLeave)
+        if (!finalNoF) {
+          el.removeEventListener('focus', handleFocus)
+          el.removeEventListener('blur', handleBlur)
+        }
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalGap, finalSpeed, finalCols, finalNoF])
+  }, [finalGap, finalSpeed, finalCols, reducedMotion, finalNoF])
 
   return (
     <div
       ref={containerRef}
       className={`pixel-card ${className}`}
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-      onFocus={finalNoF ? undefined : handleFocus}
-      onBlur={ finalNoF ? undefined : handleBlur}
       tabIndex={ finalNoF ? -1 : 0 }
     >
       <canvas className="pixel-canvas" ref={canvasRef} />
-      <div className="pixel-content">
-        {children}
-      </div>
+      <div className="pixel-content">{children}</div>
     </div>
   )
 }
