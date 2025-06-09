@@ -1,11 +1,20 @@
-// app/page.tsx  (Server Component – no 'use client')
+// app/page.tsx  (still a Server Component)
 import React from 'react'
-import Header      from './components/Header'
-import About       from './components/About'
-import Features    from './components/Features'
-import Particles   from './components/Particles'
-import ContactSection from './components/ContactSection'
-import styles      from './page.module.css'
+import dynamic from 'next/dynamic'
+import Header    from './components/Header'
+import About     from './components/About'
+import Features  from './components/Features'
+import styles    from './page.module.css'
+
+// Dynamically import the client-only parts with SSR turned off:
+const Particles = dynamic(
+  () => import('./components/Particles'),
+  { ssr: false }
+)
+const ContactSection = dynamic(
+  () => import('./components/ContactSection'),
+  { ssr: false }
+)
 
 export const metadata = {
   title: 'AIC – Academic Industrial Club',
@@ -21,7 +30,7 @@ export default function Home() {
       {/* 2) About section */}
       <About />
 
-      {/* 3) Particles background */}
+      {/* 3) Particles background (client only) */}
       <Particles
         particleCount={300}
         particleSpread={8}
@@ -39,7 +48,6 @@ export default function Home() {
         {/* 4) Domains / Features */}
         <Features />
 
-
         {/* 5) Future Interviews section */}
         <section id="about-teams" className={styles.aboutTeams}>
           <h2>Future Interviews for Teams</h2>
@@ -47,7 +55,7 @@ export default function Home() {
         </section>
       </main>
 
-      {/* 6) Contact + animated tickers */}
+      {/* 6) Contact + animated tickers (client only) */}
       <footer className={styles.footer} id="contact">
         <ContactSection />
         <p>© {new Date().getFullYear()} AIC. All rights reserved.</p>
