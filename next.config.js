@@ -1,8 +1,9 @@
-import type { NextConfig } from "next";
+// next.config.js
+const nextConfig = {
+  output: 'export',
+  basePath: '/AIC',
+  assetPrefix: '/AIC/',
+  trailingSlash: true,
+}
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  output: "export",
-};
-
-export default nextConfig;
+module.exports = nextConfig
