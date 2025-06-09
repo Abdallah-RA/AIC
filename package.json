@@ -5,8 +5,10 @@
   "homepage": "https://Abdallah-RA.github.io/aic-website",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "build": "next build && next export",
+    "export": "next export",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out",
     "lint": "next lint"
   },
   "dependencies": {
