@@ -42,7 +42,7 @@ export default function ContactForm() {
       if (!res.ok || json.success !== true) {
         throw new Error(json.error || 'Submission failed')
       }
-      alert('🎉 Thanks for joining AIC!')
+      alert('🎉 Thanks for your interst in AIC!')
       setFormData({ name: '', universityId: '', email: '', team: 'hardware' })
     } catch (err: unknown) {
       console.error('Submission error:', err)
