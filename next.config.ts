@@ -1,11 +1,12 @@
 // next.config.js
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  basePath: '/aic-website',
-  assetPrefix: '/aic-website/',
-  trailingSlash: true, // required for static export on GitHub Pages
-}
+const isProd = process.env.NODE_ENV === 'production'
 
-module.exports = nextConfig
+const basePath = isProd ? process.env.BASE_PATH || '/AIC' : ''
+
+module.exports = {
+  output: 'export',
+  basePath,
+  assetPrefix: basePath + '/',
+  trailingSlash: true,
+}
