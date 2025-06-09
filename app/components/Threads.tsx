@@ -51,14 +51,12 @@ export default function Threads({
 
     const fragmentShader = `
       precision highp float;
-
       uniform float iTime;
       uniform vec3 iResolution;
       uniform vec3 uColor;
       uniform float uAmplitude;
       uniform float uDistance;
       uniform vec2 uMouse;
-
       #define PI 3.1415926538
       const int u_line_count = 40;
       const float u_line_width = 7.0;
@@ -178,7 +176,7 @@ export default function Threads({
     handleResize();
 
     // ——— Mouse interaction ———
-    let currentMouse: [number,number] = [0.5,0.5];
+    const currentMouse: [number,number] = [0.5,0.5];
     let targetMouse: [number,number] = [0.5,0.5];
 
     const onMouseMove = (e: MouseEvent) => {
