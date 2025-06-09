@@ -1,20 +1,10 @@
-// app/page.tsx  (still a Server Component)
+// app/page.tsx  (still a Server Component — no 'use client' here)
 import React from 'react'
-import dynamic from 'next/dynamic'
-import Header    from './components/Header'
-import About     from './components/About'
-import Features  from './components/Features'
-import styles    from './page.module.css'
-
-// Dynamically import the client-only parts with SSR turned off:
-const Particles = dynamic(
-  () => import('./components/Particles'),
-  { ssr: false }
-)
-const ContactSection = dynamic(
-  () => import('./components/ContactSection'),
-  { ssr: false }
-)
+import Header            from './components/Header'
+import About             from './components/About'
+import Features          from './components/Features'
+import HomeClientSections from './components/HomeClientSections'
+import styles            from './page.module.css'
 
 export const metadata = {
   title: 'AIC – Academic Industrial Club',
@@ -30,20 +20,6 @@ export default function Home() {
       {/* 2) About section */}
       <About />
 
-      {/* 3) Particles background (client only) */}
-      <Particles
-        particleCount={300}
-        particleSpread={8}
-        speed={0.05}
-        particleColors={['#0af', '#0ff', '#a0f']}
-        moveParticlesOnHover
-        particleHoverFactor={2}
-        alphaParticles={false}
-        particleBaseSize={80}
-        sizeRandomness={1}
-        cameraDistance={25}
-      />
-
       <main className={styles.main}>
         {/* 4) Domains / Features */}
         <Features />
@@ -55,11 +31,8 @@ export default function Home() {
         </section>
       </main>
 
-      {/* 6) Contact + animated tickers (client only) */}
-      <footer className={styles.footer} id="contact">
-        <ContactSection />
-        <p>© {new Date().getFullYear()} AIC. All rights reserved.</p>
-      </footer>
+      {/* 3 + 6) These are client‐only */}
+      <HomeClientSections />
     </div>
   )
 }
